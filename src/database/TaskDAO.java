@@ -1,7 +1,147 @@
 package database;
 
-/**
- * Created by mrhappyyy on 15.05.16.
- */
-public class TaskDAO {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TaskDAO  implements DAO<TaskEntity>{
+    private static final String ID_COLUMN = "id";
+    private static final String NAME_COLUMN = "name";
+    private static final String PRICE_COLUMN = "price";
+    private static final String DATA_ADD_COLUMN = "dataAdd";
+    private static final String DATA_END_COLUMN = "dataEnd";
+    private static final String TABLE_NAME = "tasks";
+    private static final String CREATE_TABLE = "create if not exists " + TABLE_NAME +
+            " ('" + ID_COLUMN + "' integer primary key autoincrement, '" + NAME_COLUMN + "' text, '" +
+            PRICE_COLUMN + "' double, '" + DATA_ADD_COLUMN + "' text, '" + DATA_END_COLUMN + "' text);";
+    private Connection connection;
+
+    public TaskDAO(Connection connection) {
+        this.connection = connection;
+    }
+    @Override
+    public boolean createTableDateBase() {
+        try {
+            PreparedStatement task = connection.prepareStatement(CREATE_TABLE);
+            int result = task.executeUpdate();
+            task.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Не удалось создать таблицу " + TABLE_NAME);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<TaskEntity> getAll() {
+        List<TaskEntity> tasksList = new ArrayList<TaskEntity>();
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
+
+            while (res.next()) {
+                tasksList.add(new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
+                        res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN)));
+            }
+            statement.close();
+            res.close();
+            return tasksList;
+        } catch (SQLException e) {
+            System.out.println("Не удалось забрать все с таблицы " + TABLE_NAME);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public TaskEntity getById(int id) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery("SELECT FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + " = '" + id + "'");
+
+            TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
+                    res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
+            statement.close();
+            res.close();
+            return task;
+        } catch (SQLException e) {
+            System.out.println("Не удалось забрать по " + ID_COLUMN + " c таблицы " + TABLE_NAME);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public TaskEntity getByName(String name) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery("SELECT FROM " + TABLE_NAME + " WHERE " + NAME_COLUMN + " = '" + name + "'");
+
+            TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
+                    res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
+            statement.close();
+            res.close();
+            return task;
+        } catch (SQLException e) {
+            System.out.println("Не удалось забрать по " + NAME_COLUMN + " c таблицы " + TABLE_NAME);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean add(TaskEntity entity) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (" +
+            NAME_COLUMN + ", " + PRICE_COLUMN + ", " +
+            DATA_ADD_COLUMN + ", " + DATA_END_COLUMN + ") VALUES (?, ?, ?, ?)");
+
+            statement.setString(1, entity.getName());
+            statement.setDouble(2, entity.getPrice());
+            statement.setString(3, entity.getDataAdd());
+            statement.setString(4, entity.getDataEnd());
+
+            int res = statement.executeUpdate();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Не удалось добавить в таблицу " + TABLE_NAME);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean update(int id, TaskEntity entity) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE " + TABLE_NAME + " SET " +
+                    NAME_COLUMN + " = '" + entity.getName() + "', " + PRICE_COLUMN + " = '" + entity.getPrice() +
+                    "', " + DATA_END_COLUMN + " = '" + entity.getDataEnd() + "' WHERE " + ID_COLUMN + " = '" + id + "'"
+            );
+            int res = statement.executeUpdate();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Не удалось внести изменения в таблицу " + TABLE_NAME);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "DELETE FROM " + TABLE_NAME + "WHERE " + ID_COLUMN + " = '" + id + "'");
+            int res = statement.executeUpdate();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Не удалось удалить с таблицы " + TABLE_NAME);
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

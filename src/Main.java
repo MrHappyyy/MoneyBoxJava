@@ -1,5 +1,8 @@
-/**
- * Created by mrhappyyy on 15.05.16.
- */
+import database.DataBase;
+
 public class Main {
+
+    public static void main(String[] args) {
+        DataBase db = new DataBase();
+    }
 }
