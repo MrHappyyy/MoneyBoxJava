@@ -1,5 +1,9 @@
 package database;
 
+import com.sun.javaws.jnl.LibraryDesc;
+
+import java.io.IOError;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +15,7 @@ public class TaskDAO  implements DAO<TaskEntity>{
     private static final String DATA_ADD_COLUMN = "dataAdd";
     private static final String DATA_END_COLUMN = "dataEnd";
     private static final String TABLE_NAME = "tasks";
-    private static final String CREATE_TABLE = "create if not exists " + TABLE_NAME +
+    private static final String CREATE_TABLE = "create table if not exists " + TABLE_NAME +
             " ('" + ID_COLUMN + "' integer primary key autoincrement, '" + NAME_COLUMN + "' text, '" +
             PRICE_COLUMN + "' double, '" + DATA_ADD_COLUMN + "' text, '" + DATA_END_COLUMN + "' text);";
     private Connection connection;
@@ -59,7 +63,7 @@ public class TaskDAO  implements DAO<TaskEntity>{
     public TaskEntity getById(int id) {
         try {
             Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery("SELECT FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + " = '" + id + "'");
+            ResultSet res = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + " = '" + id + "'");
 
             TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
                     res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
@@ -76,7 +80,7 @@ public class TaskDAO  implements DAO<TaskEntity>{
     public TaskEntity getByName(String name) {
         try {
             Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery("SELECT FROM " + TABLE_NAME + " WHERE " + NAME_COLUMN + " = '" + name + "'");
+            ResultSet res = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME_COLUMN + " = '" + name + "'");
 
             TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
                     res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
@@ -112,7 +116,7 @@ public class TaskDAO  implements DAO<TaskEntity>{
         }
     }
 
-    @Override
+    /*@Override*/
     public boolean update(int id, TaskEntity entity) {
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -130,16 +134,15 @@ public class TaskDAO  implements DAO<TaskEntity>{
         }
     }
 
-    @Override
     public boolean delete(int id) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM " + TABLE_NAME + "WHERE " + ID_COLUMN + " = '" + id + "'");
+                    "DELETE FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + " = '" + id + "'");
             int res = statement.executeUpdate();
             statement.close();
             return true;
         } catch (SQLException e) {
-            System.out.println("Не удалось удалить с таблицы " + TABLE_NAME);
+            System.out.println("Не удалось удалить по " + ID_COLUMN + " с таблицы " + TABLE_NAME);
             e.printStackTrace();
             return false;
         }

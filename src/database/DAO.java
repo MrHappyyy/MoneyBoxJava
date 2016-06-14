@@ -9,6 +9,6 @@ public interface DAO<T> {
     T getById(int id);
 
     boolean add(T entity);
-    boolean update(int id, T entity);
-    boolean delete(int id);
+    //boolean update(int id, T entity);
+    //boolean delete(int id);
 }
