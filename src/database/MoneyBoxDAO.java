@@ -77,6 +77,7 @@ public class MoneyBoxDAO {
         } catch (SQLException e) {
             System.out.println("Не удалось положыть деньги в копилку");
             e.printStackTrace();
+            refreshMoney();
             return false;
         }
     }
@@ -90,6 +91,7 @@ public class MoneyBoxDAO {
             );
             int res = statement.executeUpdate();
             statement.close();
+            refreshMoney();
             return true;
         } catch (SQLException e) {
             System.out.println("Не удалось взять деньги с копилки");
@@ -111,6 +113,35 @@ public class MoneyBoxDAO {
             System.out.println("Не удалось сбросить копилку");
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void refreshMoney() {
+        double money = getMoney();
+        String m = String.valueOf(money);
+        String d = "";
+        int k = 0;
+        for (int i = 0; i < m.length(); i++) {
+            if (k == 0 && String.valueOf(m.charAt(i)).equals(".")) {
+                k++;
+            } else if (k == 1 || k == 2) {
+                k++;
+            } else if (k == 3) {
+                break;
+            }
+            d += String.valueOf(m.charAt(i));
+        }
+        money = Double.parseDouble(d);
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE " + TABLE_NAME + " SET " +
+                            MONEY_COLUMN + " = '" + money + "' WHERE " + ID_COLUMN + " = '" + 1 + "'"
+            );
+            int res = statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
