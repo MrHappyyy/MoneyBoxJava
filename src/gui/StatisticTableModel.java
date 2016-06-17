@@ -1,13 +1,13 @@
 package gui;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.*;
 import java.util.ArrayList;
 
-public class TaskTableModel extends AbstractTableModel {
+public class StatisticTableModel extends AbstractTableModel {
     private int countColumn = 1;
     private ArrayList<String[]> dataArrayList;
 
-    public TaskTableModel() {
+    public StatisticTableModel() {
         dataArrayList = new ArrayList<String[]>();
     }
 
@@ -54,6 +54,4 @@ public class TaskTableModel extends AbstractTableModel {
     public void removeIsRows(int rows) {
         dataArrayList.remove(rows);
     }
-
-
 }

@@ -45,6 +45,9 @@ public class TaskPanel {
 
             taskTableModel = new TaskTableModel();
             taskTable = new JTable(taskTableModel);
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+            taskTable.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
             taskScroll = new JScrollPane(taskTable);
             taskScroll.setLocation(0, HEIGHT_ADD_TASK_BUTTON);
             taskScroll.setSize(generalWindow.WIDTH_GENERAL_PANEL, generalWindow.HEIGHT_GENERAL_PANEL - HEIGHT_ADD_TASK_BUTTON);
