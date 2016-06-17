@@ -7,17 +7,19 @@ public class TaskEntity {
     private int id;
     private String name;
     private double price;
+    private int count;
     private int numberPriority;
     private String description;
     private String dataAdd;
 
-    public TaskEntity(int id, String name, double price, int numberPriority, String description, String dataAdd) {
+    public TaskEntity(int id, String name, double price, int count, int numberPriority, String description, String dataAdd) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
         this.dataAdd = dataAdd;
         this.numberPriority = numberPriority;
+        this.count = count;
     }
 
     public int getId() {
@@ -42,6 +44,14 @@ public class TaskEntity {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public void setId(int id) {
@@ -74,6 +84,7 @@ public class TaskEntity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
+                ", count=" + count +
                 ", numberPriority=" + numberPriority +
                 ", description='" + description + '\'' +
                 ", dataAdd='" + dataAdd + '\'' +
