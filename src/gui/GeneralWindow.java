@@ -2,12 +2,13 @@ package gui;
 
 import database.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.IOError;
+import java.util.ArrayList;
 
 public class GeneralWindow {
     private DataBase db;
@@ -39,13 +40,14 @@ public class GeneralWindow {
     private JPanel clarificationMoneyBox, moneyBox, moneyAdd, moneyPick,
             navigation,
             generalPanel, task, statistic, setting,
-            taskEntity, statisticEntity;
+            addTaskEntity, taskEntity, statisticEntity;
 
     /*moneyBox*/
     private JButton addMoney, pickMoney;
     private JLabel moneyLabel;
 
-    /*moneyAdd and moneyPick*/
+    /*moneyA
+    dd and moneyPick*/
     private JButton okMoneyAdd, okMoneyPick;
     private JTextField textFieldMoneyAdd, textFieldMoneyPick;
 
@@ -55,10 +57,13 @@ public class GeneralWindow {
     private String[] infoNavigation = {"ЗАДАЧИ", "СТАТИСТИКА", "НАСТРОЙКИ"};
 
     /*task*/
-    private JButton addTask, deliteTask;
+    private JButton addTask;
+    private static final int HEIGHT_ADD_TASK_BUTTON = 30;
     private TaskTableModel taskTableModel;
     private JTable taskTable;
     private JScrollPane taskScroll;
+    private ArrayList<TaskEntity> taskList;
+    private ArrayList<StatisticEntity> statisticList;
 
     public GeneralWindow(String nameWindow) {
         db = new DataBase();
@@ -254,15 +259,83 @@ public class GeneralWindow {
             frame.add(generalPanel);
         }
         initAndShowTaskPanel();
+        updateTableTask();
     }
 
     private void initAndShowTaskPanel() {
         if (task == null) {
             task = new JPanel(null);
+            task.setBackground(Color.yellow);
+
+            addTask = new JButton("ДОБАВИТЬ");
+            addTask.setSize(WIDTH_GENERAL_PANEL, HEIGHT_ADD_TASK_BUTTON);
+            addTask.setLocation(0, 0);
+            addTask.addActionListener(new Listener());
+            task.add(addTask);
+
+            taskTableModel = new TaskTableModel();
+            taskTable = new JTable(taskTableModel);
+            taskScroll = new JScrollPane(taskTable);
+            taskScroll.setLocation(0, HEIGHT_ADD_TASK_BUTTON);
+            taskScroll.setSize(WIDTH_GENERAL_PANEL, HEIGHT_GENERAL_PANEL - HEIGHT_ADD_TASK_BUTTON);
+            taskTable.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        initAndShowTaskEntityPanel((String) taskTableModel.getValueAt(taskTable.getSelectedRow(), 0));
+                    }
+                }
+            });
+            taskTable.setOpaque(false);
+            taskTable.setDefaultRenderer (Object.class, new DefaultTableCellRenderer() {
+
+                public Component getTableCellRendererComponent ( JTable table, Object value,
+                                                                  boolean isSelected, boolean hasFocus,
+                                                                  int row, int column ) {
+                    JLabel component = ( JLabel ) super
+                            .getTableCellRendererComponent ( table, value, isSelected, hasFocus, row,
+                                    column );
+                    component.setForeground ( isSelected ? Color.BLUE : Color.BLACK );
+                    component.setOpaque ( isSelected );
+                    return component;
+                }
+            } );
+            taskTable.getTableHeader().setReorderingAllowed ( false );
+            taskScroll.setOpaque(false);
+            taskScroll.getViewport().setOpaque(false);
+            task.add(taskScroll);
 
             generalPanel.add("task", task);
         }
         generalLayout.show(generalPanel, "task");
+    }
+
+    private void updateTableTask() {
+        taskList = (ArrayList<TaskEntity>) db.getTaskDAO().getAll();
+        taskTableModel.removeIsAll();
+
+        for (int i = 0; i < taskList.size(); i++) {
+            String[] table = {taskList.get(i).getName()};
+            taskTableModel.addDate(table);
+        }
+        taskTable.setVisible(false);
+        taskTable.setVisible(true);
+    }
+
+    private void initAndShowAddTaskEntityPanel() {
+        if (addTaskEntity == null) {
+            addTaskEntity = new JPanel(null);
+
+            generalPanel.add("addTask", addTaskEntity);
+        }
+        generalLayout.show(generalPanel, "addTask");
+    }
+
+    private void initAndShowTaskEntityPanel(String nameEntity) {
+        if (taskEntity == null) {
+            taskEntity = new JPanel(null);
+
+        }
     }
 
     private void initAndShowStatisticPanel() {
@@ -330,7 +403,9 @@ public class GeneralWindow {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == nextPanel) {
+            if (e.getSource() == addTask) {
+                initAndShowAddTaskEntityPanel();
+            } else if (e.getSource() == nextPanel) {
                 String infoNavig = navigationLabel.getText();
                 if (infoNavigation[0].equals(infoNavig)) {
                     initAndRefreshNavigationPanel(infoNavigation[1]);
@@ -387,12 +462,6 @@ public class GeneralWindow {
                     initAndShowMoneyBox();
                 }
             }
-
-
-
-
-
-
         }
     }
 }
