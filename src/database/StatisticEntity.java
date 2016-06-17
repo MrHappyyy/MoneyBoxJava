@@ -34,4 +34,13 @@ public class StatisticEntity {
     public void setData(String data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "StatisticEntity{" +
+                "id=" + id +
+                ", event='" + event + '\'' +
+                ", data='" + data + '\'' +
+                '}';
+    }
 }

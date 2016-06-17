@@ -7,15 +7,17 @@ public class TaskEntity {
     private int id;
     private String name;
     private double price;
+    private int numberPriority;
+    private String description;
     private String dataAdd;
-    private String dataEnd;
 
-    public TaskEntity(int id, String name, double price, String dataAdd, String dataEnd) {
+    public TaskEntity(int id, String name, double price, int numberPriority, String description, String dataAdd) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.description = description;
         this.dataAdd = dataAdd;
-        this.dataEnd = dataEnd;
+        this.numberPriority = numberPriority;
     }
 
     public int getId() {
@@ -34,8 +36,12 @@ public class TaskEntity {
         return dataAdd;
     }
 
-    public String getDataEnd() {
-        return dataEnd;
+    public int getNumberPriority() {
+        return numberPriority;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setId(int id) {
@@ -54,7 +60,23 @@ public class TaskEntity {
         this.dataAdd = dataAdd;
     }
 
-    public void setDataEnd(String dataEnd) {
-        this.dataEnd = dataEnd;
+    public void setNumberPriority(int numberPriority) {
+        this.numberPriority = numberPriority;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", numberPriority=" + numberPriority +
+                ", description='" + description + '\'' +
+                ", dataAdd='" + dataAdd + '\'' +
+                '}';
     }
 }

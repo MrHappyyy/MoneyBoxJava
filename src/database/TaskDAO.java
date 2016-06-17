@@ -12,12 +12,14 @@ public class TaskDAO  implements DAO<TaskEntity>{
     private static final String ID_COLUMN = "id";
     private static final String NAME_COLUMN = "name";
     private static final String PRICE_COLUMN = "price";
+    private static final String NUMBER_PRIORITY_COLUMN = "numberPriority";
+    private static final String DESCRIPTION_COLUMN = "description";
     private static final String DATA_ADD_COLUMN = "dataAdd";
-    private static final String DATA_END_COLUMN = "dataEnd";
     private static final String TABLE_NAME = "tasks";
     private static final String CREATE_TABLE = "create table if not exists " + TABLE_NAME +
             " ('" + ID_COLUMN + "' integer primary key autoincrement, '" + NAME_COLUMN + "' text, '" +
-            PRICE_COLUMN + "' double, '" + DATA_ADD_COLUMN + "' text, '" + DATA_END_COLUMN + "' text);";
+            PRICE_COLUMN + "' double, '" + NUMBER_PRIORITY_COLUMN + "' int, '" + DESCRIPTION_COLUMN + "' text, '" +
+            DATA_ADD_COLUMN + "' text);";
     private Connection connection;
 
     public TaskDAO(Connection connection) {
@@ -47,7 +49,8 @@ public class TaskDAO  implements DAO<TaskEntity>{
 
             while (res.next()) {
                 tasksList.add(new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
-                        res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN)));
+                        res.getDouble(PRICE_COLUMN), res.getInt(NUMBER_PRIORITY_COLUMN),
+                        res.getString(DESCRIPTION_COLUMN), res.getString(DATA_ADD_COLUMN)));
             }
             statement.close();
             res.close();
@@ -66,7 +69,8 @@ public class TaskDAO  implements DAO<TaskEntity>{
             ResultSet res = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + " = '" + id + "'");
 
             TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
-                    res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
+                    res.getDouble(PRICE_COLUMN), res.getInt(NUMBER_PRIORITY_COLUMN),
+                    res.getString(DESCRIPTION_COLUMN), res.getString(DATA_ADD_COLUMN));
             statement.close();
             res.close();
             return task;
@@ -83,7 +87,8 @@ public class TaskDAO  implements DAO<TaskEntity>{
             ResultSet res = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME_COLUMN + " = '" + name + "'");
 
             TaskEntity task = new TaskEntity(res.getInt(ID_COLUMN), res.getString(NAME_COLUMN),
-                    res.getDouble(PRICE_COLUMN), res.getString(DATA_ADD_COLUMN), res.getString(DATA_END_COLUMN));
+                    res.getDouble(PRICE_COLUMN), res.getInt(NUMBER_PRIORITY_COLUMN),
+                    res.getString(DESCRIPTION_COLUMN), res.getString(DATA_ADD_COLUMN));
             statement.close();
             res.close();
             return task;
@@ -98,13 +103,14 @@ public class TaskDAO  implements DAO<TaskEntity>{
     public boolean add(TaskEntity entity) {
         try {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (" +
-            NAME_COLUMN + ", " + PRICE_COLUMN + ", " +
-            DATA_ADD_COLUMN + ", " + DATA_END_COLUMN + ") VALUES (?, ?, ?, ?)");
+            NAME_COLUMN + ", " + PRICE_COLUMN + ", " + NUMBER_PRIORITY_COLUMN + ", " +
+            DESCRIPTION_COLUMN + ", " + DATA_ADD_COLUMN + ") VALUES (?, ?, ?, ?, ?)");
 
             statement.setString(1, entity.getName());
             statement.setDouble(2, entity.getPrice());
-            statement.setString(3, entity.getDataAdd());
-            statement.setString(4, entity.getDataEnd());
+            statement.setInt(3, entity.getNumberPriority());
+            statement.setString(4, entity.getDescription());
+            statement.setString(5, entity.getDataAdd());
 
             int res = statement.executeUpdate();
             statement.close();
@@ -122,7 +128,8 @@ public class TaskDAO  implements DAO<TaskEntity>{
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE " + TABLE_NAME + " SET " +
                     NAME_COLUMN + " = '" + entity.getName() + "', " + PRICE_COLUMN + " = '" + entity.getPrice() +
-                    "', " + DATA_END_COLUMN + " = '" + entity.getDataEnd() + "' WHERE " + ID_COLUMN + " = '" + id + "'"
+                    "', " + NUMBER_PRIORITY_COLUMN + " = '" + entity.getNumberPriority() + "', " +
+                    DESCRIPTION_COLUMN  + " = '" + entity.getDescription() + "' WHERE " + ID_COLUMN + " = '" + id + "'"
             );
             int res = statement.executeUpdate();
             statement.close();

@@ -254,7 +254,7 @@ public class GeneralWindow {
             generalPanel = new JPanel(new CardLayout());
             generalPanel.setSize(WIDTH_GENERAL_PANEL, HEIGHT_GENERAL_PANEL);
             generalPanel.setLocation(GENERAL_PANEL_X, GENERAL_PANEL_Y);
-            generalPanel.setBackground(Color.GREEN);
+            //generalPanel.setBackground(Color.GREEN);
             generalLayout = (CardLayout) generalPanel.getLayout();
             frame.add(generalPanel);
         }
@@ -265,7 +265,6 @@ public class GeneralWindow {
     private void initAndShowTaskPanel() {
         if (task == null) {
             task = new JPanel(null);
-            task.setBackground(Color.yellow);
 
             addTask = new JButton("ДОБАВИТЬ");
             addTask.setSize(WIDTH_GENERAL_PANEL, HEIGHT_ADD_TASK_BUTTON);
