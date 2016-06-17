@@ -102,6 +102,24 @@ public class TaskDAO  implements DAO<TaskEntity>{
     @Override
     public boolean add(TaskEntity entity) {
         try {
+            List<TaskEntity> list = getAll();
+            if (entity.getNumberPriority() == (list.size() + 1)) {
+            } else if (entity.getNumberPriority() > (list.size())) {
+                /*int maxPriority = 1;
+                for (int i = 0; i < list.size(); i++) {
+                    if (maxPriority < list.get(i).getNumberPriority()) {
+                        maxPriority = list.get(i).getNumberPriority();
+                    }
+                }*/
+                entity.setNumberPriority(list.size() + 1);
+            } else if (entity.getNumberPriority() <= (list.size())) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getNumberPriority() >= entity.getNumberPriority()) {
+                        list.get(i).setNumberPriority(list.get(i).getNumberPriority() + 1);
+                        update(list.get(i).getId(), list.get(i));
+                    }
+                }
+            }
             PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (" +
             NAME_COLUMN + ", " + PRICE_COLUMN + ", " + NUMBER_PRIORITY_COLUMN + ", " +
             DESCRIPTION_COLUMN + ", " + DATA_ADD_COLUMN + ") VALUES (?, ?, ?, ?, ?)");
@@ -114,12 +132,17 @@ public class TaskDAO  implements DAO<TaskEntity>{
 
             int res = statement.executeUpdate();
             statement.close();
+            sortNumberPriority();
             return true;
         } catch (SQLException e) {
             System.out.println("Не удалось добавить в таблицу " + TABLE_NAME);
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void sortNumberPriority() {
+
     }
 
     /*@Override*/

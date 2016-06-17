@@ -11,62 +11,52 @@ import java.io.IOError;
 import java.util.ArrayList;
 
 public class GeneralWindow {
-    private DataBase db;
-    private JFrame frame;
-    private static final int WIDTH_WINDOW = 400;
-    private static final int HEIGHT_WINDOW = 600;
+    protected TaskPanel taskPanel;
+    protected NavigationPanel navigationPanel;
+    protected SettingPanel settingPanel;
+    protected StatisticPanel statisticPanel;
+    protected MoneyBoxPanel moneyBoxPanel;
 
-    private static final int HEIGHT_LINE = 2;
+    protected DataBase db;
 
-    private static final int CLARIFICATION_MONEY_BOX_PANEL_X = 0;
-    private static final int CLARIFICATION_MONEY_BOX_PANEL_Y = 0;
-    private static final int WIDTH_CLARIFICATION_MONEY_BOX_PANEL = WIDTH_WINDOW;
-    private static final int HEIGHT_CLARIFICATION_MONEY_BOX_PANEL = 40;
+    protected JFrame frame;
 
-    private static final int NAVIGATION_PANEL_X = CLARIFICATION_MONEY_BOX_PANEL_X;
-    private static final int NAVIGATION_PANEL_Y = CLARIFICATION_MONEY_BOX_PANEL_Y + HEIGHT_CLARIFICATION_MONEY_BOX_PANEL + HEIGHT_LINE;
-    private static final int WIDTH_NAVIGATION_PANEL = WIDTH_CLARIFICATION_MONEY_BOX_PANEL;
-    private static final int HEIGHT_NAVIGATION_PANEL = 100;
+    protected static final int WIDTH_WINDOW = 400;
+    protected static final int HEIGHT_WINDOW = 600;
 
-    private static final int GENERAL_PANEL_X = CLARIFICATION_MONEY_BOX_PANEL_X;
-    private static final int GENERAL_PANEL_Y = CLARIFICATION_MONEY_BOX_PANEL_Y + HEIGHT_CLARIFICATION_MONEY_BOX_PANEL + HEIGHT_NAVIGATION_PANEL + (HEIGHT_LINE * 2);
-    private static final int WIDTH_GENERAL_PANEL = WIDTH_CLARIFICATION_MONEY_BOX_PANEL;
-    private static final int HEIGHT_GENERAL_PANEL = HEIGHT_WINDOW - GENERAL_PANEL_Y;
+    protected static final int HEIGHT_LINE = 2;
+
+    protected static final int CLARIFICATION_MONEY_BOX_PANEL_X = 0;
+    protected static final int CLARIFICATION_MONEY_BOX_PANEL_Y = 0;
+    protected static final int WIDTH_CLARIFICATION_MONEY_BOX_PANEL = WIDTH_WINDOW;
+    protected static final int HEIGHT_CLARIFICATION_MONEY_BOX_PANEL = 40;
+
+    protected static final int NAVIGATION_PANEL_X = CLARIFICATION_MONEY_BOX_PANEL_X;
+    protected static final int NAVIGATION_PANEL_Y = CLARIFICATION_MONEY_BOX_PANEL_Y + HEIGHT_CLARIFICATION_MONEY_BOX_PANEL + HEIGHT_LINE;
+    protected static final int WIDTH_NAVIGATION_PANEL = WIDTH_CLARIFICATION_MONEY_BOX_PANEL;
+    protected static final int HEIGHT_NAVIGATION_PANEL = 100;
+
+    protected static final int GENERAL_PANEL_X = CLARIFICATION_MONEY_BOX_PANEL_X;
+    protected static final int GENERAL_PANEL_Y = CLARIFICATION_MONEY_BOX_PANEL_Y + HEIGHT_CLARIFICATION_MONEY_BOX_PANEL + HEIGHT_NAVIGATION_PANEL + (HEIGHT_LINE * 2);
+    protected static final int WIDTH_GENERAL_PANEL = WIDTH_CLARIFICATION_MONEY_BOX_PANEL;
+    protected static final int HEIGHT_GENERAL_PANEL = HEIGHT_WINDOW - GENERAL_PANEL_Y;
 
     private static final String DOUBLE_CHARACTER = "0123456789";
-    private static final double maxDouble = 9999999.99;
+    protected static final double maxDouble = 9999999.99;
 
-    private CardLayout generalLayout, moneyLayout;
-    private JPanel clarificationMoneyBox, moneyBox, moneyAdd, moneyPick,
-            navigation,
-            generalPanel, task, statistic, setting,
-            addTaskEntity, taskEntity, statisticEntity;
+    protected CardLayout generalLayout, moneyLayout;
+    protected JPanel clarificationMoneyBox, generalPanel;
 
-    /*moneyBox*/
-    private JButton addMoney, pickMoney;
-    private JLabel moneyLabel;
-
-    /*moneyA
-    dd and moneyPick*/
-    private JButton okMoneyAdd, okMoneyPick;
-    private JTextField textFieldMoneyAdd, textFieldMoneyPick;
-
-    /*navigation*/
-    private JButton prevPanel, nextPanel;
-    private JLabel navigationLabel;
-    private String[] infoNavigation = {"ЗАДАЧИ", "СТАТИСТИКА", "НАСТРОЙКИ"};
-
-    /*task*/
-    private JButton addTask;
-    private static final int HEIGHT_ADD_TASK_BUTTON = 30;
-    private TaskTableModel taskTableModel;
-    private JTable taskTable;
-    private JScrollPane taskScroll;
-    private ArrayList<TaskEntity> taskList;
-    private ArrayList<StatisticEntity> statisticList;
+    protected ArrayList<TaskEntity> taskList;
+    protected ArrayList<StatisticEntity> statisticList;
 
     public GeneralWindow(String nameWindow) {
         db = new DataBase();
+        taskPanel = new TaskPanel(this);
+        statisticPanel = new StatisticPanel(this);
+        settingPanel = new SettingPanel(this);
+        moneyBoxPanel = new MoneyBoxPanel(this);
+        navigationPanel = new NavigationPanel(this);
         createWindow(nameWindow);
     }
 
@@ -80,7 +70,7 @@ public class GeneralWindow {
             frame.setLayout(null);
             initClarificationMoneyBox();
             initLine();
-            initAndRefreshNavigationPanel(infoNavigation[0]);
+            navigationPanel.initAndRefreshNavigationPanel(NavigationPanel.INFO_NAVIGATION[0]);
             initGeneralPanel();
             /*frame.addWindowListener(new WindowAdapter() {
                 @Override
@@ -100,92 +90,7 @@ public class GeneralWindow {
             moneyLayout = (CardLayout) clarificationMoneyBox.getLayout();
             frame.add(clarificationMoneyBox);
         }
-        initAndShowMoneyBox();
-    }
-
-    private void initAndShowMoneyBox() {
-        if (moneyBox == null) {
-            moneyBox = new JPanel(null);
-            moneyBox.setBackground(Color.cyan);
-
-            int sizeButton = (HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/6)*4;
-
-            addMoney = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/add.png"));
-            addMoney.setBorderPainted(false);
-            addMoney.setLocation((((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/3)/4)-(sizeButton/2)), (HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/2)-(sizeButton/2));
-            addMoney.setSize(sizeButton, sizeButton);
-            addMoney.addActionListener(new Listener());
-            moneyBox.add(addMoney);
-
-            pickMoney = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/pick.png"));
-            pickMoney.setBorderPainted(false);
-            pickMoney.setLocation(((((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/3)/4)*2)-(sizeButton/2)), (HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/2)-(sizeButton/2));
-            pickMoney.setSize(sizeButton, sizeButton);
-            pickMoney.addActionListener(new Listener());
-            moneyBox.add(pickMoney);
-
-            moneyLabel = new JLabel();
-            moneyLabel.setLocation((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/5) + CLARIFICATION_MONEY_BOX_PANEL_X, CLARIFICATION_MONEY_BOX_PANEL_Y);
-            moneyLabel.setSize((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/3)*2, HEIGHT_CLARIFICATION_MONEY_BOX_PANEL);
-            moneyLabel.setVerticalAlignment(SwingConstants.CENTER);
-            moneyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            moneyBox.add(moneyLabel);
-            clarificationMoneyBox.add("money", moneyBox);
-        }
-        moneyLabel.setVisible(false);
-        moneyLabel.setText(String.valueOf(db.getMoneyBox().getMoney()));
-        moneyLabel.setVisible(true);
-        moneyLayout.show(clarificationMoneyBox, "money");
-    }
-
-    private void initAndShowMoneyAdd() {
-        if (moneyAdd == null) {
-            moneyAdd = new JPanel(null);
-            moneyAdd.setBackground(Color.cyan);
-
-            int sizeButton = (HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/6)*4;
-
-            okMoneyAdd = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/ok.png"));
-            okMoneyAdd.setBorderPainted(false);
-            okMoneyAdd.setLocation((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16)*14, HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/5);
-            okMoneyAdd.setSize(sizeButton, sizeButton);
-            okMoneyAdd.addActionListener(new Listener());
-            moneyAdd.add(okMoneyAdd);
-
-            textFieldMoneyAdd = new JTextField();
-            textFieldMoneyAdd.setSize((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16)*12 ,(HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/4)*2);
-            textFieldMoneyAdd.setLocation(WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16, HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/4);
-            textFieldMoneyAdd.addKeyListener(new TextListener());
-            textFieldMoneyAdd.addActionListener(new Listener());
-            moneyAdd.add(textFieldMoneyAdd);
-            clarificationMoneyBox.add("moneyAdd", moneyAdd);
-        }
-        moneyLayout.show(clarificationMoneyBox, "moneyAdd");
-    }
-
-    private void initAndShowMoneyPick() {
-        if (moneyPick == null) {
-            moneyPick = new JPanel(null);
-            moneyPick.setBackground(Color.cyan);
-
-            int sizeButton = (HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/6)*4;
-
-            okMoneyPick = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/ok.png"));
-            okMoneyPick.setBorderPainted(false);
-            okMoneyPick.setLocation((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16)*14, HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/5);
-            okMoneyPick.setSize(sizeButton, sizeButton);
-            okMoneyPick.addActionListener(new Listener());
-            moneyPick.add(okMoneyPick);
-
-            textFieldMoneyPick = new JTextField();
-            textFieldMoneyPick.setSize((WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16)*12 ,(HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/4)*2);
-            textFieldMoneyPick.setLocation(WIDTH_CLARIFICATION_MONEY_BOX_PANEL/16, HEIGHT_CLARIFICATION_MONEY_BOX_PANEL/4);
-            textFieldMoneyPick.addKeyListener(new TextListener());
-            textFieldMoneyPick.addActionListener(new Listener());
-            moneyPick.add(textFieldMoneyPick);
-            clarificationMoneyBox.add("moneyPick", moneyPick);
-        }
-        moneyLayout.show(clarificationMoneyBox, "moneyPick");
+        moneyBoxPanel.initAndShowMoneyBox();
     }
 
     private void initLine() {
@@ -201,54 +106,6 @@ public class GeneralWindow {
         frame.add(line2);
     }
 
-    private void initAndRefreshNavigationPanel(String textInfoNavigation) {
-        if (navigation == null) {
-            navigation = new JPanel(null);
-            navigation.setBackground(Color.GREEN);
-            navigation.setLocation(NAVIGATION_PANEL_X, NAVIGATION_PANEL_Y);
-            navigation.setSize(WIDTH_NAVIGATION_PANEL, HEIGHT_NAVIGATION_PANEL);
-
-            {
-                int height = HEIGHT_NAVIGATION_PANEL / 2;
-                int locationY = (HEIGHT_NAVIGATION_PANEL / 2) - (height / 2);
-                {
-                    int widthLabel = WIDTH_NAVIGATION_PANEL / 2;
-                    navigationLabel = new JLabel();
-                    navigationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                    navigationLabel.setVerticalAlignment(SwingConstants.CENTER);
-                    navigationLabel.setSize(widthLabel, height);
-                    navigationLabel.setLocation(0, 0);
-                    JPanel p = new JPanel(null);
-                    p.setSize(widthLabel, height);
-                    p.setLocation((WIDTH_NAVIGATION_PANEL / 2) - (widthLabel / 2),
-                            locationY);
-                    p.setBackground(Color.yellow);
-                    p.add(navigationLabel);
-                    navigation.add(p);
-                }
-                {
-                    int widthB = (WIDTH_NAVIGATION_PANEL / 4) / 2;
-                    prevPanel = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/prev.png"));
-                    prevPanel.setSize(widthB, height);
-                    prevPanel.setLocation((WIDTH_NAVIGATION_PANEL/5) - widthB,locationY);
-                    prevPanel.setBorderPainted(false);
-                    prevPanel.addActionListener(new Listener());
-                    navigation.add(prevPanel);
-                    nextPanel = new JButton(new ImageIcon("/home/mrhappyyy/Programming/Java/Projects/Money-Box/Image/next.png"));
-                    nextPanel.setSize(widthB, height);
-                    nextPanel.setLocation(((WIDTH_NAVIGATION_PANEL/5)*4),locationY);
-                    nextPanel.setBorderPainted(false);
-                    nextPanel.addActionListener(new Listener());
-                    navigation.add(nextPanel);
-                }
-            }
-            frame.add(navigation);
-        }
-        navigationLabel.setVisible(false);
-        navigationLabel.setText(textInfoNavigation);
-        navigationLabel.setVisible(true);
-    }
-
     private void initGeneralPanel() {
         if (generalPanel == null) {
             generalPanel = new JPanel(new CardLayout());
@@ -258,114 +115,10 @@ public class GeneralWindow {
             generalLayout = (CardLayout) generalPanel.getLayout();
             frame.add(generalPanel);
         }
-        initAndShowTaskPanel();
-        updateTableTask();
+        taskPanel.initAndShowTaskPanel();
     }
 
-    private void initAndShowTaskPanel() {
-        if (task == null) {
-            task = new JPanel(null);
-
-            addTask = new JButton("ДОБАВИТЬ");
-            addTask.setSize(WIDTH_GENERAL_PANEL, HEIGHT_ADD_TASK_BUTTON);
-            addTask.setLocation(0, 0);
-            addTask.addActionListener(new Listener());
-            task.add(addTask);
-
-            taskTableModel = new TaskTableModel();
-            taskTable = new JTable(taskTableModel);
-            taskScroll = new JScrollPane(taskTable);
-            taskScroll.setLocation(0, HEIGHT_ADD_TASK_BUTTON);
-            taskScroll.setSize(WIDTH_GENERAL_PANEL, HEIGHT_GENERAL_PANEL - HEIGHT_ADD_TASK_BUTTON);
-            taskTable.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        initAndShowTaskEntityPanel((String) taskTableModel.getValueAt(taskTable.getSelectedRow(), 0));
-                    }
-                }
-            });
-            taskTable.setOpaque(false);
-            taskTable.setDefaultRenderer (Object.class, new DefaultTableCellRenderer() {
-
-                public Component getTableCellRendererComponent ( JTable table, Object value,
-                                                                  boolean isSelected, boolean hasFocus,
-                                                                  int row, int column ) {
-                    JLabel component = ( JLabel ) super
-                            .getTableCellRendererComponent ( table, value, isSelected, hasFocus, row,
-                                    column );
-                    component.setForeground ( isSelected ? Color.BLUE : Color.BLACK );
-                    component.setOpaque ( isSelected );
-                    return component;
-                }
-            } );
-            taskTable.getTableHeader().setReorderingAllowed ( false );
-            taskScroll.setOpaque(false);
-            taskScroll.getViewport().setOpaque(false);
-            task.add(taskScroll);
-
-            generalPanel.add("task", task);
-        }
-        generalLayout.show(generalPanel, "task");
-    }
-
-    private void updateTableTask() {
-        taskList = (ArrayList<TaskEntity>) db.getTaskDAO().getAll();
-        taskTableModel.removeIsAll();
-
-        for (int i = 0; i < taskList.size(); i++) {
-            String[] table = {taskList.get(i).getName()};
-            taskTableModel.addDate(table);
-        }
-        taskTable.setVisible(false);
-        taskTable.setVisible(true);
-    }
-
-    private void initAndShowAddTaskEntityPanel() {
-        if (addTaskEntity == null) {
-            addTaskEntity = new JPanel(null);
-
-            generalPanel.add("addTask", addTaskEntity);
-        }
-        generalLayout.show(generalPanel, "addTask");
-    }
-
-    private void initAndShowTaskEntityPanel(String nameEntity) {
-        if (taskEntity == null) {
-            taskEntity = new JPanel(null);
-
-        }
-    }
-
-    private void initAndShowStatisticPanel() {
-        if (statistic == null) {
-            statistic = new JPanel(null);
-            statistic.setBackground(Color.BLUE);
-            generalPanel.add("statistic", statistic);
-        }
-        generalLayout.show(generalPanel, "statistic");
-    }
-
-    private void initAndShowSettingPanel() {
-        if (setting == null) {
-            setting = new JPanel(null);
-            setting.setBackground(Color.MAGENTA);
-            generalPanel.add("setting", setting);
-        }
-        generalLayout.show(generalPanel, "setting");
-    }
-
-    private class TextListener extends KeyAdapter {
-
-        public void keyReleased(KeyEvent e) {
-            if (e.getSource() == textFieldMoneyAdd || e.getSource() == textFieldMoneyPick) {
-                JTextField jt = (JTextField) e.getSource();
-                jt.setText(stringCastToDoubleInString(jt.getText()));
-            }
-        }
-    }
-
-    private static String stringCastToDoubleInString(String s) {
+    public static String stringCastToDoubleInString(String s) {
         String parseDouble = "";
         boolean isDote = true;
 
@@ -396,71 +149,5 @@ public class GeneralWindow {
             System.out.println("Не удалось строку привести к типу double");
         }
         return "0";
-    }
-
-    private class Listener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == addTask) {
-                initAndShowAddTaskEntityPanel();
-            } else if (e.getSource() == nextPanel) {
-                String infoNavig = navigationLabel.getText();
-                if (infoNavigation[0].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[1]);
-                    initAndShowStatisticPanel();
-                } else if (infoNavigation[1].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[2]);
-                    initAndShowSettingPanel();
-                } else if (infoNavigation[2].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[0]);
-                    initAndShowTaskPanel();
-                }
-            } else if (e.getSource() == prevPanel) {
-                String infoNavig = navigationLabel.getText();
-                if (infoNavigation[0].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[2]);
-                    initAndShowSettingPanel();
-                } else if (infoNavigation[1].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[0]);
-                    initAndShowTaskPanel();
-                } else if (infoNavigation[2].equals(infoNavig)) {
-                    initAndRefreshNavigationPanel(infoNavigation[1]);
-                    initAndShowStatisticPanel();
-                }
-            } else if (e.getSource() == addMoney) {
-                initAndShowMoneyAdd();
-            } else if (e.getSource() == pickMoney) {
-                initAndShowMoneyPick();
-            } else if (e.getSource() == okMoneyAdd || e.getSource() == textFieldMoneyAdd) {
-                if (!textFieldMoneyAdd.getText().equals("")) {
-                    double money = db.getMoneyBox().getMoney();
-
-                    if (Double.parseDouble(textFieldMoneyAdd.getText()) + money <= maxDouble) {
-                        db.getMoneyBox().addMoney(Double.parseDouble(textFieldMoneyAdd.getText()));
-                        textFieldMoneyAdd.setText("");
-                        initAndShowMoneyBox();
-                    } else {
-                        textFieldMoneyAdd.setText(String.valueOf(maxDouble - money));
-                    }
-                } else {
-                    initAndShowMoneyBox();
-                }
-            } else if (e.getSource() == okMoneyPick || e.getSource() == textFieldMoneyPick) {
-                if (!textFieldMoneyPick.getText().equals("")) {
-                    double money = db.getMoneyBox().getMoney();
-
-                    if (money - Double.parseDouble(textFieldMoneyPick.getText()) >= 0) {
-                        db.getMoneyBox().pickMoney(Double.parseDouble(textFieldMoneyPick.getText()));
-                        textFieldMoneyPick.setText("");
-                        initAndShowMoneyBox();
-                    } else {
-                        textFieldMoneyPick.setText(String.valueOf(money));
-                    }
-                } else {
-                    initAndShowMoneyBox();
-                }
-            }
-        }
     }
 }
