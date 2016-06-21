@@ -49,7 +49,6 @@ public class StatisticPanel {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) {
-                        System.out.println("sad");
                         initAndShowStatisticEntityPanel((String) tableModelStatistic.getValueAt(tableStatistic.getSelectedRow(), 0));
                     }
                 }
@@ -131,7 +130,7 @@ public class StatisticPanel {
         generalWindow.statisticList = (ArrayList<StatisticEntity>) generalWindow.db.getStatisticDAO().getAll();
         tableModelStatistic.removeIsAll();
 
-        for (int i = 0; i < generalWindow.statisticList.size(); i++) {
+        for (int i = generalWindow.statisticList.size() - 1; i >= 0; i--) {
             String[] table = {generalWindow.statisticList.get(i).getData()};
             tableModelStatistic.addDate(table);
         }

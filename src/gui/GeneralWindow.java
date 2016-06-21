@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOError;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class GeneralWindow {
@@ -49,6 +50,8 @@ public class GeneralWindow {
 
     protected ArrayList<TaskEntity> taskList;
     protected ArrayList<StatisticEntity> statisticList;
+
+    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
     public GeneralWindow(String nameWindow) {
         db = new DataBase();
@@ -140,6 +143,25 @@ public class GeneralWindow {
             }
         }
 
+        if (!isDote) {
+            String temp = "";
+            for (int i = 0; i < parseDouble.length(); i++) {
+                if (String.valueOf(parseDouble.charAt(i)).equals(".")) {
+                    temp += ".";
+                    if (parseDouble.length() > i + 1) {
+                        temp += String.valueOf(parseDouble.charAt(i + 1));
+                    }
+
+                    if (parseDouble.length() > i + 2) {
+                        temp += String.valueOf(parseDouble.charAt(i + 2));
+                    }
+                    break;
+                }
+                temp += String.valueOf(parseDouble.charAt(i));
+            }
+            parseDouble = temp;
+        }
+
         try {
             if (!parseDouble.equals("")) {
                 Double.parseDouble(parseDouble);
@@ -148,6 +170,6 @@ public class GeneralWindow {
         } catch (IOError e) {
             System.out.println("Не удалось строку привести к типу double");
         }
-        return "0";
+        return "";
     }
 }

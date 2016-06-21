@@ -1,11 +1,14 @@
 package gui;
 
+import database.StatisticEntity;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.Date;
 
 import static gui.GeneralWindow.*;
 
@@ -136,6 +139,9 @@ public class MoneyBoxPanel {
                     if (Double.parseDouble(textFieldMoneyAdd.getText()) + money <= maxDouble) {
                         generalWindow.db.getMoneyBox().addMoney(Double.parseDouble(textFieldMoneyAdd.getText()));
                         textFieldMoneyAdd.setText("");
+                        generalWindow.db.getStatisticDAO().add(new StatisticEntity(1,
+                                "в копилку добавлено " + money + " грн.",
+                                DATE_FORMAT.format(new Date(System.currentTimeMillis()))));
                         initAndShowMoneyBox();
                     } else {
                         textFieldMoneyAdd.setText(String.valueOf(maxDouble - money));
@@ -150,6 +156,9 @@ public class MoneyBoxPanel {
                     if (money - Double.parseDouble(textFieldMoneyPick.getText()) >= 0) {
                         generalWindow.db.getMoneyBox().pickMoney(Double.parseDouble(textFieldMoneyPick.getText()));
                         textFieldMoneyPick.setText("");
+                        generalWindow.db.getStatisticDAO().add(new StatisticEntity(1,
+                                "с копилки забрано " + money + " грн.",
+                                DATE_FORMAT.format(new Date(System.currentTimeMillis()))));
                         initAndShowMoneyBox();
                     } else {
                         textFieldMoneyPick.setText(String.valueOf(money));
