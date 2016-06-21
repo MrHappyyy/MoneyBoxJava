@@ -1,5 +1,6 @@
 package gui;
 
+import com.sun.prism.sw.SWMaskTexture;
 import database.StatisticEntity;
 
 import javax.swing.*;
@@ -24,7 +25,8 @@ public class StatisticPanel {
     private JScrollPane scrollPane;
 
     /*statisticEntity*/
-    private JLabel data, event;
+    private JLabel data;
+    private JTextPane event;
     private JButton beck;
 
     public StatisticPanel(GeneralWindow generalWindow) {
@@ -82,21 +84,27 @@ public class StatisticPanel {
             statisticEntity = new JPanel(null);
 
             data = new JLabel();
-            data.setLocation(0, 10);
-            data.setSize(WIDTH_GENERAL_PANEL, 300);
+            data.setLocation(0, 0);
+            data.setSize(WIDTH_GENERAL_PANEL, 100);
             data.setHorizontalAlignment(SwingConstants.CENTER);
             data.setVerticalAlignment(SwingConstants.CENTER);
             statisticEntity.add(data);
 
-            event = new JLabel();
-            JScrollPane scrollPane = new JScrollPane(event);
-            scrollPane.setLocation(0, 50);
-            scrollPane.setSize(WIDTH_GENERAL_PANEL, HEIGHT_GENERAL_PANEL - 80);
-            statisticEntity.add(scrollPane);
+            event = new JTextPane();
+            event.setEnabled(false);
+            event.setDisabledTextColor(Color.black);
+            JScrollPane sc = new JScrollPane(event);
+            sc.setLocation(0, 100);
+            sc.setSize(WIDTH_GENERAL_PANEL, HEIGHT_GENERAL_PANEL - 180);
+            event.setOpaque(false);
+            sc.setOpaque(false);
+            sc.getViewport().setOpaque(false);
+            sc.setBorder(null);
+            statisticEntity.add(sc);
 
             beck = new JButton("<НАЗАД");
-            beck.setLocation(0, HEIGHT_GENERAL_PANEL - 20);
-            beck.setSize(WIDTH_GENERAL_PANEL, 20);
+            beck.setLocation(0, HEIGHT_GENERAL_PANEL - 30);
+            beck.setSize(WIDTH_GENERAL_PANEL, 30);
             beck.setHorizontalAlignment(SwingConstants.CENTER);
             beck.setVerticalAlignment(SwingConstants.CENTER);
             beck.addActionListener(new ActionListener() {
@@ -111,6 +119,7 @@ public class StatisticPanel {
         for (int i = 0; i < generalWindow.statisticList.size(); i++) {
             if (generalWindow.statisticList.get(i).getData().equals(dataEvent)) {
                 data.setText(generalWindow.statisticList.get(i).getData());
+                Dimension dm = event.getPreferredSize();
                 event.setText(generalWindow.statisticList.get(i).getEvent());
                 break;
             }
